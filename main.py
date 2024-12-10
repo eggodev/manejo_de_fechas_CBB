@@ -26,7 +26,7 @@ def verificar_credenciales(credentials: HTTPBasicCredentials = Depends(security)
     correct_username = os.getenv("USERNAME")  # Leer desde las variables de entorno
     correct_password = os.getenv("PASSWORD")  # Leer desde las variables de entorno
 
-    if credentials.username != correct_username or credentials.password != correct_password:
+    if credentials.Username != correct_username or credentials.Password != correct_password:
         raise HTTPException(
             status_code=401,
             detail="Credenciales incorrectas",
