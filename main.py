@@ -1,17 +1,10 @@
-from fastapi import FastAPI, Depends, HTTPException
-from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime, timedelta
 from babel.dates import format_date
-import os
-from dotenv import load_dotenv
-
-# Cargar las variables de entorno desde el archivo .env
-load_dotenv()
 
 app = FastAPI()
-security = HTTPBasic()
 
 # Modelo de entrada
 class Cita(BaseModel):
@@ -21,20 +14,8 @@ class Cita(BaseModel):
 class FechaDisponible(BaseModel):
     fechaDisponible: str  # Fechas disponibles en formato amigable
 
-# Función para verificar credenciales
-def verificar_credenciales(credentials: HTTPBasicCredentials = Depends(security)):
-    correct_username = os.getenv("USERNAME")  # Leer desde las variables de entorno
-    correct_password = os.getenv("PASSWORD")  # Leer desde las variables de entorno
-
-    if credentials.Username != correct_username or credentials.Password != correct_password:
-        raise HTTPException(
-            status_code=401,
-            detail="Credenciales incorrectas",
-        )
-    return credentials
-
 @app.post("/obtener-fechas-disponibles", response_model=List[FechaDisponible])
-async def obtener_fechas_disponibles(citas: List[Cita], credentials: HTTPBasicCredentials = Depends(verificar_credenciales)):
+async def obtener_fechas_disponibles(citas: List[Cita]):
     # Paso 1: Almacenar el JSON en citas_ya_agendadas
     citas_ya_agendadas = [
         datetime.fromisoformat(cita.startTime).date()  # Solo usamos la fecha, sin la hora
