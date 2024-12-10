@@ -1,0 +1,20 @@
+# Ignorar el archivo .env con las credenciales
+.env
+
+# Ignorar el directorio de compilación (si existe)
+__pycache__/
+*.pyc
+*.pyo
+
+# Ignorar los entornos virtuales (si usas uno)
+venv/
+env/
+
+# Ignorar archivos temporales o de respaldo
+*.swp
+*.bak
+
+# Ignorar archivos de configuración del editor
+.idea/
+.vscode/
+.DS_Store

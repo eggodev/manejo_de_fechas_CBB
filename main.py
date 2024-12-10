@@ -4,6 +4,11 @@ from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime, timedelta
 from babel.dates import format_date
+import os
+from dotenv import load_dotenv
+
+# Cargar las variables de entorno desde el archivo .env
+load_dotenv()
 
 app = FastAPI()
 security = HTTPBasic()
@@ -18,8 +23,8 @@ class FechaDisponible(BaseModel):
 
 # Función para verificar credenciales
 def verificar_credenciales(credentials: HTTPBasicCredentials = Depends(security)):
-    correct_username = "usuario"  # Cambia esto por tu nombre de usuario
-    correct_password = "contraseña"  # Cambia esto por tu contraseña
+    correct_username = os.getenv("USERNAME")  # Leer desde las variables de entorno
+    correct_password = os.getenv("PASSWORD")  # Leer desde las variables de entorno
 
     if credentials.username != correct_username or credentials.password != correct_password:
         raise HTTPException(
