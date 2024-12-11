@@ -25,7 +25,8 @@ async def obtener_fechas_disponibles(citas: List[Cita]):
     
     # Si no hay citas agendadas (todos son null)
     if not citas_ya_agendadas:
-        return _buscar_fechas_disponibles()
+        fechas_disponibles = _buscar_fechas_disponibles()
+        return [{"fechaDisponible": _formatear_fecha(fecha)} for fecha in fechas_disponibles]
     
     # Paso 2: Ordenar las fechas en formato ISO UTC de menor a mayor
     citas_ya_agendadas.sort()
