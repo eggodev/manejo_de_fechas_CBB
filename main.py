@@ -6,6 +6,11 @@ from babel.dates import format_date
 
 app = FastAPI()
 
+# Constantes globales
+horarioAtencion = (9, 17)  # Horario de atención (9:00 a 17:00)
+duracionCita = 30  # Duración de la cita en minutos
+tiempoEspera = 60  # Tiempo de espera en minutos
+
 # Modelo de entrada
 class Cita(BaseModel):
     startTime: Optional[str]  # Puede ser una fecha en formato ISO o null
@@ -61,6 +66,11 @@ def _buscar_fechas_disponibles(citas_ya_agendadas=None):
     while len(fechas_disponibles) < 5:
         # Determinar si el día actual es lunes o miércoles
         if dia_actual.weekday() in [0, 2]:  # 0 = lunes, 2 = miércoles
+            # Filtro adicional para la fecha de hoy
+            if dia_actual == hoy:
+                if not _es_fecha_disponible_hoy():
+                    dia_actual += timedelta(days=1)
+                    continue
             # Si no está ocupado, añadir a fechas disponibles
             if dia_actual not in citas_ocupadas:
                 fechas_disponibles.append(dia_actual)
@@ -68,6 +78,26 @@ def _buscar_fechas_disponibles(citas_ya_agendadas=None):
         dia_actual += timedelta(days=1)
 
     return fechas_disponibles
+
+# Función para verificar si la fecha de hoy es válida
+def _es_fecha_disponible_hoy():
+    """
+    Verifica si la fecha de hoy es válida considerando el horario de atención,
+    la duración de la cita y el tiempo de espera.
+
+    Returns:
+        bool: True si la fecha de hoy es válida, False si no lo es.
+    """
+    ahora = datetime.utcnow()
+    hora_actual = ahora.hour + ahora.minute / 60  # Hora actual en formato decimal
+    inicio_atencion, fin_atencion = horarioAtencion
+
+    # Calcular el tiempo restante del día dentro del horario de atención
+    tiempo_restante = fin_atencion - hora_actual
+
+    # Verificar si hay suficiente tiempo para una cita
+    tiempo_necesario = duracionCita / 60 + tiempoEspera / 60  # En horas
+    return tiempo_restante >= tiempo_necesario and hora_actual < fin_atencion
 
 # Función para formatear la fecha de manera amigable
 def _formatear_fecha(fecha):
