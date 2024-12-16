@@ -2,7 +2,6 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime, timedelta
-from babel.dates import format_date
 
 app = FastAPI()
 
@@ -110,4 +109,12 @@ def _formatear_fecha(fecha):
     Returns:
         str: Fecha en formato amigable.
     """
-    return format_date(fecha, "EEEE d 'de' MMMM", locale='es')
+    dias_semana = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
+    meses = [
+        "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+        "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+    ]
+    dia_semana = dias_semana[fecha.weekday()]
+    dia = fecha.day
+    mes = meses[fecha.month - 1]
+    return f"{dia_semana} {dia} de {mes}"
